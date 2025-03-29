@@ -63,6 +63,17 @@ class AdminController extends BaseController
     return redirect()->route('rank.index')->with('success', 'Cập nhật hạng thành công');
   }
 
+  public function deleteCustomerRank($id)
+  {
+    $customer = Customer::findOrFail($id);
+    $customer->is_admin_active = 0; // Đặt is_admin_active = 0
+    $customer->rank_id = null; // Xóa rank_id (tùy chọn)
+    $customer->rank_assigned_at = null; // Xóa ngày gán hạng (tùy chọn)
+    $customer->save();
+
+    return redirect()->route('rank.index')->with('success', 'Xóa người dùng khỏi danh sách thành công');
+  }
+
 
 	//form add ranks
 	public function addranks()

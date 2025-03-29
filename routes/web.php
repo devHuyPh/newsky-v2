@@ -55,7 +55,7 @@ Route::prefix('admin/kyc')->group(function () {
 Route::get('/admin/customers/{id}/edit-rank', [App\Http\Controllers\Admin\AdminController::class, 'editCustomerRank'])->name('customer.edit.rank');
 Route::post('/admin/customers/{id}/update-rank', [App\Http\Controllers\Admin\AdminController::class, 'updateCustomerRank'])->name('customer.update.rank');
 Route::post('/admin/customers/store-rank', [App\Http\Controllers\Admin\AdminController::class, 'storeCustomerRank'])->name('customer.store.rank');
-
+Route::delete('/admin/customers/{id}/delete-rank', [App\Http\Controllers\Admin\AdminController::class, 'deleteCustomerRank'])->name('customer.delete.rank');
 Route::prefix('/kyc')
   ->controller(KycCustomerController::class)
   ->middleware(LocaleMiddleware::class)
