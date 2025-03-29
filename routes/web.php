@@ -52,13 +52,15 @@ Route::prefix('admin/kyc')->group(function () {
   Route::patch('pending/reject/{id}',[KycController::class,'pendingreject'])->name('kyc.pending.reject');
 });
 
-
+Route::get('/admin/customers/{id}/edit-rank', [App\Http\Controllers\Admin\AdminController::class, 'editCustomerRank'])->name('customer.edit.rank');
+Route::post('/admin/customers/{id}/update-rank', [App\Http\Controllers\Admin\AdminController::class, 'updateCustomerRank'])->name('customer.update.rank');
+Route::post('/admin/customers/store-rank', [App\Http\Controllers\Admin\AdminController::class, 'storeCustomerRank'])->name('customer.store.rank');
 
 Route::prefix('/kyc')
   ->controller(KycCustomerController::class)
   ->middleware(LocaleMiddleware::class)
   ->group(function () {
-   
+
     Route::get('','index')->name('kyc.index');
     Route::post('/submit','submit')->name('kyc.submit');
   });

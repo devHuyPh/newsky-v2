@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\Ranking;
 use Botble\Ecommerce\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
@@ -15,8 +16,53 @@ class AdminController extends BaseController
 	{
 		$data = Ranking::orderBy('sort_by', 'asc')->paginate(5);
 		$dayofsharing = setting('day_of_sharing');
-		return view(self::PATH_VIEW . __FUNCTION__, compact('data', 'dayofsharing'));
+    $ranks = Ranking::all();
+    $allCustomers = Customer::all();
+    $customers = Customer::where('is_admin_active', 1)
+      ->with('rank')
+      ->paginate(3, ['*'], 'customer_page');
+		return view(self::PATH_VIEW . __FUNCTION__, compact('data', 'dayofsharing','customers','ranks','allCustomers'));
 	}
+
+  public function editCustomerRank($id)
+  {
+    $customer = Customer::findOrFail($id);
+    $ranks = Ranking::all(); // Lấy tất cả ranks để hiển thị trong dropdown
+
+    return view(self::PATH_VIEW . 'edit-customer-rank', compact('customer', 'ranks'));
+  }
+
+  // Xử lý thêm mới qua modal
+  public function storeCustomerRank(Request $request)
+  {
+    $request->validate([
+      'customer_id' => 'required|exists:ec_customers,id',
+      'rank_id' => 'nullable|exists:rankings,id',
+    ]);
+
+    $customer = Customer::findOrFail($request->input('customer_id'));
+    $customer->is_admin_active = 1; // Đặt is_admin_active = 1
+    $customer->rank_id = $request->input('rank_id');
+    $customer->rank_assigned_at = $request->input('rank_id') ? now() : null;
+    $customer->save();
+
+    return redirect()->route('rank.index')->with('success', 'Thêm mới thành công');
+  }
+  // Xử lý cập nhật hạng cho customer
+  public function updateCustomerRank(Request $request, $id)
+  {
+    $request->validate([
+      'rank_id' => 'nullable|exists:rankings,id',
+    ]);
+
+    $customer = Customer::findOrFail($id);
+    $customer->rank_id = $request->input('rank_id');
+    $customer->rank_assigned_at = $request->input('rank_id') ? now() : null;
+    $customer->save();
+
+    return redirect()->route('rank.index')->with('success', 'Cập nhật hạng thành công');
+  }
+
 
 	//form add ranks
 	public function addranks()

@@ -16,10 +16,16 @@ class Customer extends Model
         'rank_id',
         'walet_1',
         'rank_assigned_at',
-        'last_branch_revenue'
+        'last_branch_revenue',
+        'is_admin_active'
     ];
 
     protected $dates = ['rank_assigned_at'];
+
+    public function rank()
+    {
+        return $this->belongsTo(Ranking::class, 'rank_id');
+    }
 
     public function upline()
     {
